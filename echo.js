@@ -16,19 +16,20 @@ client.on('connect', function() {
 	console.log(`Connect to ${config.echo.host}`);
 });
 
-client.on('.CreateAccess', function(data) {
-	var shellOut = shell.exec(config.scripts.createAccess + ' ' + data.user_id);
+client.on('CreateAccess', function(data) {
+	// var shellOut = shell.exec(config.scripts.createAccess + ' ' + data.user_id);
+	var shellOut = shell.exec('dir');
 
-	client.emit('.CreateAccess', {
+	client.emit('CreateAccess', {
 		...data,
-		ovpn: '' // output ovpn file
+		ovpn: shellOut // output ovpn file
 	});
 });
 
-client.on('.DeleteAccess', function(data) {
+client.on('DeleteAccess', function(data) {
 	shell.exec(config.scripts.deleteAccess + ' ' + data.user_id);
 
-	client.emit('.DeleteAccess', data);
+	client.emit('DeleteAccess', data);
 });
 
 client.on('disconnect', function() {

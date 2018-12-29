@@ -1,6 +1,6 @@
 module.exports = {
 	echo: {
-		token: '',
+		token: 'MRQINgEBODARIWpq7GLpNPY7lXodV3',
 		host: 'http://localhost:3000'
 	},
 

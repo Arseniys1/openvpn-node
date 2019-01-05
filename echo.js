@@ -1,5 +1,6 @@
 var io = require('socket.io-client');
-var shell = require('shelljs');
+var child_process = require('child_process');
+var fs = require('fs');
 var config = require('./config');
 
 var client = io(config.echo.host, {
@@ -17,12 +18,35 @@ client.on('connect', function() {
 });
 
 client.on('CreateAccess', function(data) {
-	// var shellOut = shell.exec(config.scripts.createAccess + ' ' + data.user_id);
-	var shellOut = shell.exec('dir');
+	if (config.debug) console.log(data);
 
-	client.emit('CreateAccess', {
-		...data,
-		ovpn: shellOut // output ovpn file
+	var ch = child_process.spawn('./create-user.sh', [data.data.user_text_id], {
+		shell: true,
+	});
+
+	ch.stdout.on('data', (chData) => {
+		if (config.debug) console.log(`Stdout: ${chData}`);
+
+		fs.readFile(`/root/${data.data.user_text_id}.ovpn`, 'utf8', function (error, fileData) {
+			if (error && config.debug) console.log(error);
+			
+			client.emit('CreateAccess', {
+				...data,
+				ovpn: fileData
+			});
+		});
+	});
+
+	ch.stderr.on('data', (chData) => {
+		if (config.debug) console.log(`Stderr: ${chData}`);
+	});
+	
+	ch.on('close', (code) => {
+		if (config.debug) console.log(`Code: ${code}`);
+	});
+	
+	ch.on('error', (err) => {
+		if (config.debug) console.log(`Error: ${err}`);
 	});
 });
 

@@ -7,7 +7,7 @@ module.exports = {
 	},
 
 	scripts: {
-		createAccess: '',
-		deleteAccess: '',
+		createAccess: './scripts/create-user.sh',
+		deleteAccess: './scripts/remove-user.sh',
 	}
 };

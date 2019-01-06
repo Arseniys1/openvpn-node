@@ -20,7 +20,7 @@ client.on('connect', function() {
 client.on('CreateAccess', function(data) {
 	if (config.debug) console.log(data);
 
-	var ch = child_process.spawn('sh/create-user.sh', [data.data.user.text_id], {
+	var ch = child_process.spawn(config.scripts.createAccess, [data.data.user.text_id], {
 		shell: true,
 	});
 
@@ -37,11 +37,10 @@ client.on('CreateAccess', function(data) {
 
 		fs.readFile(`/root/${data.data.user.text_id}.ovpn`, 'utf8', function (error, fileData) {
 			if (error && config.debug) console.log(error);
-			
-			client.emit('CreateAccess', {
-				...data,
-				ovpn: fileData
-			});
+
+			data.data['ovpn'] = fileData;
+
+			client.emit('CreateAccess', data);
 		});
 	});
 	
@@ -51,9 +50,29 @@ client.on('CreateAccess', function(data) {
 });
 
 client.on('DeleteAccess', function(data) {
-	shell.exec(config.scripts.deleteAccess + ' ' + data.user_id);
+	if (config.debug) console.log(data);
 
-	client.emit('DeleteAccess', data);
+	var ch = child_process.spawn(config.scripts.deleteAccess, [data.data.user.text_id], {
+		shell: true,
+	});
+
+	ch.stdout.on('data', (chData) => {
+		if (config.debug) console.log(`Stdout: ${chData}`);
+	});
+
+	ch.stderr.on('data', (chData) => {
+		if (config.debug) console.log(`Stderr: ${chData}`);
+	});
+	
+	ch.on('close', (code) => {
+		if (config.debug) console.log(`Code: ${code}`);
+
+		client.emit('DeleteAccess', data);
+	});
+	
+	ch.on('error', (err) => {
+		if (config.debug) console.log(`Error: ${err}`);
+	});
 });
 
 client.on('disconnect', function() {

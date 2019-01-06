@@ -26,6 +26,14 @@ client.on('CreateAccess', function(data) {
 
 	ch.stdout.on('data', (chData) => {
 		if (config.debug) console.log(`Stdout: ${chData}`);
+	});
+
+	ch.stderr.on('data', (chData) => {
+		if (config.debug) console.log(`Stderr: ${chData}`);
+	});
+	
+	ch.on('close', (code) => {
+		if (config.debug) console.log(`Code: ${code}`);
 
 		fs.readFile(`/root/${data.data.user.text_id}.ovpn`, 'utf8', function (error, fileData) {
 			if (error && config.debug) console.log(error);
@@ -35,14 +43,6 @@ client.on('CreateAccess', function(data) {
 				ovpn: fileData
 			});
 		});
-	});
-
-	ch.stderr.on('data', (chData) => {
-		if (config.debug) console.log(`Stderr: ${chData}`);
-	});
-	
-	ch.on('close', (code) => {
-		if (config.debug) console.log(`Code: ${code}`);
 	});
 	
 	ch.on('error', (err) => {

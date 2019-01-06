@@ -20,14 +20,14 @@ client.on('connect', function() {
 client.on('CreateAccess', function(data) {
 	if (config.debug) console.log(data);
 
-	var ch = child_process.spawn('./create-user.sh', [data.data.user_text_id], {
+	var ch = child_process.spawn('sh/create-user.sh', [data.data.user.text_id], {
 		shell: true,
 	});
 
 	ch.stdout.on('data', (chData) => {
 		if (config.debug) console.log(`Stdout: ${chData}`);
 
-		fs.readFile(`/root/${data.data.user_text_id}.ovpn`, 'utf8', function (error, fileData) {
+		fs.readFile(`/root/${data.data.user.text_id}.ovpn`, 'utf8', function (error, fileData) {
 			if (error && config.debug) console.log(error);
 			
 			client.emit('CreateAccess', {

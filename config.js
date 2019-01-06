@@ -2,8 +2,8 @@ module.exports = {
 	debug: true,
 
 	echo: {
-		token: 'e4UIqkMtSuIXBjTfVWpqGTPGfeOcgq',
-		host: 'http://localhost:3000'
+		token: 'UmBxDM0TrQoVy9F1hkqy51L7mZg5bO',
+		host: 'http://185.232.28.206:3030'
 	},
 
 	scripts: {
